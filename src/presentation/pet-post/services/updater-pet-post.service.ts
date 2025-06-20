@@ -1,3 +1,4 @@
+import { CustomError } from '../../../domain';
 import { FinderPetPostService } from './finder-pet-post.service';
 
 export class UpdaterPetPostService {
@@ -17,7 +18,7 @@ export class UpdaterPetPostService {
       };
     } catch (error) {
       console.error('Error updating pet post:', error);
-      throw new Error('Failed to update pet post');
+      throw CustomError.internalServer('Failed to update pet post');
     }
   }
 }

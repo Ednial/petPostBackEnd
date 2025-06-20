@@ -1,11 +1,13 @@
+import { encryptAdapter } from '../../../config/bcrypt.adapter';
 import { User } from '../../../data';
+import { CustomError, RegisterUserDto } from '../../../domain';
 
 export class RegisterUserService {
-  async execute(data: any) {
+  async execute(data: RegisterUserDto) {
     const user = new User();
-    user.username = data.username;
+    user.username = data.fullname;
     user.email = data.email;
-    user.password = data.password;
+    user.password = encryptAdapter.hash(data.password);
     try {
       await user.save();
       return {
@@ -13,7 +15,7 @@ export class RegisterUserService {
       };
     } catch (error) {
       console.error('Error creating user:', error);
-      throw new Error('Failed to create user');
+      throw CustomError.internalServer('Failed to create user');
     }
   }
 }

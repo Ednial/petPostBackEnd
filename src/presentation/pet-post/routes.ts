@@ -7,6 +7,8 @@ import { FinderPetPostsService } from './services/finder-pet-posts.service';
 import { UpdaterPetPostService } from './services/updater-pet-post.service';
 import { ApprovePetPostService } from './services/approve-pet-post.service';
 import { RejectPetPostService } from './services/reject-pet-post.service';
+import { AuthMiddleware } from '../common/middlewares/auth.middleware';
+import { Role } from '../../data';
 
 export class PetPostRoutes {
   static get routes(): Router {
@@ -36,13 +38,34 @@ export class PetPostRoutes {
       rejectPetPostService
     );
 
+    router.use(AuthMiddleware.protect);
     router.get('/', petPostController.findAllPetPosts);
     router.get('/:id', petPostController.findPetPostById);
-    router.post('/', petPostController.createPetPost);
-    router.patch('/:id', petPostController.update);
-    router.delete('/:id', petPostController.delete);
-    router.patch('/:id/approve', petPostController.approve);
-    router.patch('/:id/reject', petPostController.reject);
+    router.post(
+      '/',
+      AuthMiddleware.restrictTo(Role.USER),
+      petPostController.createPetPost
+    );
+    router.patch(
+      '/:id',
+      AuthMiddleware.restrictTo(Role.ADMIN),
+      petPostController.update
+    );
+    router.delete(
+      '/:id',
+      AuthMiddleware.restrictTo(Role.ADMIN),
+      petPostController.delete
+    );
+    router.patch(
+      '/:id/approve',
+      AuthMiddleware.restrictTo(Role.ADMIN),
+      petPostController.approve
+    );
+    router.patch(
+      '/:id/reject',
+      AuthMiddleware.restrictTo(Role.ADMIN),
+      petPostController.reject
+    );
 
     return router;
   }

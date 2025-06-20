@@ -5,6 +5,10 @@ import { FinderUserService } from './services/finder-user.service';
 import { FinderUsersService } from './services/finder-users.service';
 import { UpdaterUserService } from './services/updater-user.service';
 import { EliminatorUserService } from './services/eliminator-user.service';
+import { RegisterUserDto } from '../../domain';
+import { LoginUserDto } from '../../domain/dtos/users/login-user.dto';
+import { handleError } from '../common/handleError';
+import { envs } from '../../config';
 
 export class UserController {
   constructor(
@@ -17,26 +21,47 @@ export class UserController {
   ) {}
 
   register = (req: Request, res: Response) => {
-    const data = req.body;
+    const [error, data] = RegisterUserDto.execute(req.body);
+
+    if (error) {
+      return res.status(422).json({
+        message: error,
+      });
+    }
 
     this.registerUserService
-      .execute(data)
+      .execute(data!)
       .then((result) => res.status(201).json(result))
-      .catch((error) => res.status(500).json(error));
+      .catch((error) => handleError(error, res));
   };
 
   login = (req: Request, res: Response) => {
+    const [error, data] = LoginUserDto.execute(req.body);
+    if (error) {
+      return res.status(422).json({
+        message: error,
+      });
+    }
+
     this.loginUserService
-      .execute()
-      .then((result) => res.status(200).json(result))
-      .catch((error) => res.status(500).json(error));
+      .execute(data!)
+      .then((result) => {
+        res.cookie('token', result.token, {
+          httpOnly: true,
+          secure: envs.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 3 * 60 * 60 * 1000, // three hours
+        });
+        res.status(200).json(result);
+      })
+      .catch((error) => handleError(error, res));
   };
 
   findAllUsers = (req: Request, res: Response) => {
     this.finderUsersService
       .executeByFindAll()
       .then((result) => res.status(200).json(result))
-      .catch((error) => res.status(500).json(error));
+      .catch((error) => handleError(error, res));
   };
 
   findUserById = (req: Request, res: Response) => {
@@ -45,7 +70,7 @@ export class UserController {
     this.finderUserService
       .executeByFindOne(id)
       .then((result) => res.status(200).json(result))
-      .catch((error) => res.status(500).json(error));
+      .catch((error) => handleError(error, res));
   };
 
   delete = (req: Request, res: Response) => {
@@ -54,7 +79,7 @@ export class UserController {
     this.eliminatorUserService
       .execute(id)
       .then((result) => res.status(200).json(result))
-      .catch((error) => res.status(500).json(error));
+      .catch((error) => handleError(error, res));
   };
 
   update = (req: Request, res: Response) => {
@@ -64,6 +89,6 @@ export class UserController {
     this.updaterUserService
       .execute(id, data)
       .then((result) => res.status(200).json(result))
-      .catch((error) => res.status(500).json(error));
+      .catch((error) => handleError(error, res));
   };
 }
