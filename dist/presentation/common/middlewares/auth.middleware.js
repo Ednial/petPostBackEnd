@@ -32,12 +32,14 @@ class AuthMiddleware {
                 });
                 if (!user)
                     return res.status(401).json({ message: 'Unauthorized' });
-                req.body.sessionUser = user;
+                req.sessionUser = user;
                 next();
             }
             catch (error) {
                 console.error('Authentication error:', error);
-                return res.status(500).json({ message: 'Internal Server Error' });
+                return res
+                    .status(500)
+                    .json({ message: 'Internal Server Error no user found' });
             }
         });
     }
@@ -45,7 +47,7 @@ class AuthMiddleware {
 exports.AuthMiddleware = AuthMiddleware;
 AuthMiddleware.restrictTo = (...roles) => {
     return (req, res, next) => {
-        if (!roles.includes(req.body.sessionUser.role)) {
+        if (!roles.includes(req.sessionUser.role)) {
             return res.status(403).json({
                 message: 'You do not have permission to perform this action',
             });

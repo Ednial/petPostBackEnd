@@ -18,6 +18,9 @@ class FinderPetPostsService {
                 where: {
                     hasFound: true,
                 },
+                relations: {
+                    user: true,
+                },
             });
             return petPosts;
         });

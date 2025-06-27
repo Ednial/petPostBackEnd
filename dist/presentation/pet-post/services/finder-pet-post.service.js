@@ -20,6 +20,9 @@ class FinderPetPostService {
                     id,
                     hasFound: true,
                 },
+                relations: {
+                    user: true,
+                },
             });
             if (!petPost) {
                 throw domain_1.CustomError.notFound('Pet post not found');

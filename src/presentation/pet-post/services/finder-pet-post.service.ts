@@ -8,6 +8,9 @@ export class FinderPetPostService {
         id,
         hasFound: true,
       },
+      relations: {
+        user: true,
+      },
     });
 
     if (!petPost) {

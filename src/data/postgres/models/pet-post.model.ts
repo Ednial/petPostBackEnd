@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   BaseEntity,
+  ManyToOne,
 } from 'typeorm';
+import { User } from './user.model';
 
 export enum PetPostStatus {
   PENDING = 'pending',
@@ -37,4 +39,7 @@ export class PetPost extends BaseEntity {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne(() => User, (user) => user.petPost)
+  user: User;
 }

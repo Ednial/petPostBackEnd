@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.Role = void 0;
 const typeorm_1 = require("typeorm");
+const pet_post_model_1 = require("./pet-post.model");
 var Role;
 (function (Role) {
     Role["ADMIN"] = "admin";
@@ -47,6 +48,10 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => pet_post_model_1.PetPost, (petPost) => petPost.user),
+    __metadata("design:type", Array)
+], User.prototype, "petPost", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

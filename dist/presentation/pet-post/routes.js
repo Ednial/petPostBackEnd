@@ -11,6 +11,7 @@ const updater_pet_post_service_1 = require("./services/updater-pet-post.service"
 const approve_pet_post_service_1 = require("./services/approve-pet-post.service");
 const reject_pet_post_service_1 = require("./services/reject-pet-post.service");
 const auth_middleware_1 = require("../common/middlewares/auth.middleware");
+const data_1 = require("../../data");
 class PetPostRoutes {
     static get routes() {
         const router = (0, express_1.Router)();
@@ -25,11 +26,11 @@ class PetPostRoutes {
         router.use(auth_middleware_1.AuthMiddleware.protect);
         router.get('/', petPostController.findAllPetPosts);
         router.get('/:id', petPostController.findPetPostById);
-        router.post('/', petPostController.createPetPost);
-        router.patch('/:id', petPostController.update);
-        router.delete('/:id', petPostController.delete);
-        router.patch('/:id/approve', petPostController.approve);
-        router.patch('/:id/reject', petPostController.reject);
+        router.post('/', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.USER), petPostController.createPetPost);
+        router.patch('/:id', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), petPostController.update);
+        router.delete('/:id', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), petPostController.delete);
+        router.patch('/:id/approve', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), petPostController.approve);
+        router.patch('/:id/reject', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), petPostController.reject);
         return router;
     }
 }

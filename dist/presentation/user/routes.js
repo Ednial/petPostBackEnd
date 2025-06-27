@@ -26,8 +26,8 @@ class UserRoutes {
         router.use(auth_middleware_1.AuthMiddleware.protect);
         router.get('/', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), userController.findAllUsers);
         router.get('/:id', userController.findUserById);
-        router.patch('/:id', userController.update);
-        router.delete('/:id', userController.delete);
+        router.patch('/:id', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), userController.update);
+        router.delete('/:id', auth_middleware_1.AuthMiddleware.restrictTo(data_1.Role.ADMIN), userController.delete);
         return router;
     }
 }

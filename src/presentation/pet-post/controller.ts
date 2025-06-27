@@ -23,7 +23,7 @@ export class PetPostController {
     const data = req.body;
 
     this.creatorPetPostService
-      .execute(data)
+      .execute(data, req.body.sessionUser)
       .then((result) => res.status(201).json(result))
       .catch((error) => handleError(error, res));
   };

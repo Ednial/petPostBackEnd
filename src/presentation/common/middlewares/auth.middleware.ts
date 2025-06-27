@@ -21,17 +21,19 @@ export class AuthMiddleware {
       });
       if (!user) return res.status(401).json({ message: 'Unauthorized' });
 
-      req.body.sessionUser = user;
+      (req as any).sessionUser = user;
       next();
     } catch (error) {
       console.error('Authentication error:', error);
-      return res.status(500).json({ message: 'Internal Server Error' });
+      return res
+        .status(500)
+        .json({ message: 'Internal Server Error no user found' });
     }
   }
 
   static restrictTo = (...roles: Role[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-      if (!roles.includes(req.body.sessionUser.role)) {
+      if (!roles.includes((req as any).sessionUser.role)) {
         return res.status(403).json({
           message: 'You do not have permission to perform this action',
         });
